@@ -1,10 +1,9 @@
 const mongoose = require('mongoose')
 const userBooks = mongoose.Schema({
-    _id: String,
-    userId: [{type: String,
-    ref:'UsersModel'}],
+    // _id: String,
+    userId: String,
     bookId: String
 
-}, {collection: 'user_books'})
+}, {collection: 'user_book'})
 
 module.exports = userBooks

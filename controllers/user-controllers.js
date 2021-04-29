@@ -47,6 +47,8 @@ module.exports = (app) => {
             .then((actualUser) => {
                 if(actualUser) {
                     console.log("User login mai Mila bhai")
+                    actualUser["password"]=undefined
+                    console.log("deleted password",actualUser)
                     req.session['profile'] = actualUser
                     res.send(actualUser)
                 } else {
@@ -61,47 +63,53 @@ module.exports = (app) => {
     }
 
     const updateUser=(req,res)=>{
-        const userId=req.params['uid'];
-        if(userId==!null){
-            usersDao.updateUser(userId)
+        // const userId=req.params['uid'];
+        const credentials = req.body;
+        // credentials["_id"]=undefined;
+        const userId=credentials._id;
+        console.log("body",credentials._id);
+        // let oldUser=null;
+        // usersDao.findUserById(userId)
+        //     .then((old_user)=>{
+        //         // res.send(old_user)
+        //         oldUser=old_user
+        //     })
+        if(userId!==null){
+            console.log('I am here');
+            usersDao.updateUser(userId,credentials)
                 .then((user)=>{
-                    res.send(user)
+                    console.log(user.n)
+                    if(user.n===1)
+                        res.json(credentials)
+                    else
+                        res.json("msg: there was some issue")
                 })
         }
         else{
-            alert('No such user exists');
+            console.log('No such user exists');
         }
-
     }
 
     const deleteUser=(req,res) =>{
-        const userId=req.params['uid'];
-        if(userId==!null){
+        const credentials = req.body;
+        // credentials["_id"]=undefined;
+        const userId=credentials._id;
+        if(userId!==null){
             usersDao.deleteUser(userId)
                 .then(()=>{
                     res.send("Deleted Successfully");
                 })
         }
         else{
-            alert('No such user exists');
+            console.log('No such user exists');
         }
     }
     const logout = (req, res) => {
         const credentials = req.session['profile'];
         console.log("logout body",credentials);
-        /*userDao.findUserByCredentials(credentials)
-                .then((actualUser) => {
-                    if(actualUser) {
-                        console.log("Logout hua bhai")
-                        req.session['profile'] = actualUser;
-                        }})*/
-
         if (credentials) {
             req.session.destroy();
-//          res.redirect('/');
-//          req.logout();
-            res.clearCookie('connect.sid') // clean up!
-
+            res.clearCookie('connect.sid') // clean up
             return res.json({ msg: 'logging you out' })
         } else {
             return res.json({ msg: 'no user to log out!' })
@@ -118,7 +126,7 @@ module.exports = (app) => {
     app.post("/api/users/register", register);
     app.post("/api/users/login", login);
     app.post("/api/users/logout", logout);
-    app.put("/api/users/:uid/update",updateUser);
-    app.delete("/api/users/:uid/delete",deleteUser);
+    app.put("/api/users/update",updateUser);
+    app.delete("/api/users/delete",deleteUser);
 
 }
