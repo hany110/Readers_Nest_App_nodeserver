@@ -1,9 +1,10 @@
 // TODO: review https://expressjs.com/
-/*const dotenv = require("dotenv").config()*/
+const dotenv = require("dotenv").config()
 const express = require('express')
 const app = express()
 const password = process.env.PASSWORD
 const username = process.env.USER
+
 
 const session = require('express-session')
 app.use(session({
